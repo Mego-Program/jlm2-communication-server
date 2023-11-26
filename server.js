@@ -11,9 +11,10 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
     cors: {
-        origin: "https://communication-jlm-2-9b72.vercel.app/",
+        origin: "*",
+        //origin: "http://localhost:5173",
         methods: ["GET", "POST"],
-    },
+    }
 });
 let userList = []
 io.on("connection", (socket) => {
@@ -25,12 +26,19 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send_message", (data) => {
-        console.log("room:",data.room,"message:",data.message)
-        socket.to(data.room).emit("receive_message", data.message);
+        console.log(data)
+        if (data.typeData == "privte_message"){
+            socket.to(data.reciver).emit("privte_message",data)
+        }
+        else{
+            socket.to(data.room).emit("receive_message", data)
+        }  
     });
+
+
 });
 
 
 server.listen(port, () => {
-    console.log(`server is running on port ${port} `);
+    console.log(`server is running on port ${port}`);
 })
