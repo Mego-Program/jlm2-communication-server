@@ -12,7 +12,7 @@ const server = http.createServer(app)
 app.use(cors());
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5174","http://localhost:5173","http://localhost:4173","https://communication-jlm-2-9b72.vercel.app","https://communication-jlm-2-9b72.vercel.app/assets/remoteEntry.js"],
+        origin: ["http://localhost:5174","http://localhost:5173","http://localhost:4173","https://communication-jlm-2-9b72.vercel.app","https://communication-jlm-2-9b72.vercel.app/assets/remoteEntry.js","https://infra-jerusalem-2.vercel.app"],
         methods: ["GET", "POST", "HEAD"],
     }
 });
