@@ -1,6 +1,6 @@
 let userList = [
     {nameID:'0000', userName:'Admin', team:'A', role:'Team leader', status:"connect", socket:""},
-    {nameID:'1111', userName:'nissim1', team:'A', role:'front', status:"connect", socket:""},
+    {nameID:'1111', userName:'nissim', team:'A', role:'front', status:"connect", socket:""},
     {nameID:'2222', userName:'reuven', team:'A', role:'front', status:"connect", socket:""},
     {nameID:'3333', userName:'refael', team:'B', role:'Team leader', status:"connect", socket:""},
     {nameID:'4444', userName:'moshe', team:'B', role:'beack', status:"connect", socket:""},
