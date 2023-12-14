@@ -1,20 +1,15 @@
 console.log("ChatProjectDB")
 import mongoose from 'mongoose'
 import chatProjectSchema from "./ChatProjectSchema.js"
-import pass from "./pass.js"
-
-//connect to DB
-mongoose.connect('mongodb+srv://nissimamsallem:'+pass+'/?retryWrites=true&w=majority')
 
 
 export async function getData(user){
-
+    await mongoose.connect(process.env.MONGOURI)
     mongoose.connection.on('connected',()=>{
         console.log('mongodb Connected!')
     })
     try {
         const messagesFromDB = await chatProjectSchema.find({aouter:user})
-       
         return messagesFromDB
     } catch (error) {
         console.error('Error retrieving information', error);
@@ -22,7 +17,7 @@ export async function getData(user){
 }
 
 export async function getUsers(){
-
+    await mongoose.connect(process.env.MONGOURI)
     mongoose.connection.on('connected',()=>{
         console.log('mongodb Connected!')
     })
@@ -35,7 +30,7 @@ export async function getUsers(){
 }
 
 export async function getRooms(){
-
+    await mongoose.connect(process.env.MONGOURI)
     mongoose.connection.on('connected',()=>{
         console.log('mongodb Connected!')
     })
@@ -48,6 +43,8 @@ export async function getRooms(){
 }
 
 async function SaveData(data){
+    await mongoose.connect(process.env.MONGOURI)
+
     const to = data.to;
     const type = data.typeMessage;
     const room = data.room;
