@@ -7,10 +7,11 @@ import {roomList,userList} from "./RoomAndUsers.js";
 import SaveData, {getData} from './ChatProjectDB.js';
 import { instrument } from '@socket.io/admin-ui';
 
-
 const app = express();
 const port = 3001;
 const server = http.createServer(app)
+
+userList.map((object)=> {object.socket='',object.status='disconncet'})
 
 let userFromInfra = "https://infra-jerusalem-2-server.vercel.app/allusersnameimg"
 const io = new Server(server, {
@@ -29,6 +30,7 @@ async function getUsersfromInfra (){
         console.error("ERROR - DATA Infra!!!",error)
     }
 }
+
 getUsersfromInfra()
 
 app.use(cors());
@@ -37,28 +39,40 @@ instrument(io,{
     auth:false
 })
 
-
 io.on("connection", (socket) => {
 
     console.log('users:',io.engine.clientsCount,`User Connected: ${socket.id}`);
-    
+
     io.emit("roomList",roomList)
     io.emit("userList",userList)
 
     socket.on('upLoadOldmessages',(user)=>{
-        console.log("het")
+        try {
+            userList.filter((object)=> object.userName == user)[0].socket = socket.id
+            userList.filter((object)=> object.userName == user)[0].status = 'connect'
+            io.emit("userList",userList)
+        } catch (error) {
+            console.error(error)
+            console.log('not found user!')
+            userList.push({userName:user,
+                            status:'connect',
+                            socket:socket.id})
+            io.emit("userList",userList)
+        }
+
+        const userID = userList.filter((object)=> object.userName == user)[0].nameID
+
         const oldMessages = async () => {
             try {
-                const data = await getData(user)
-                socket.emit('oldMessages',(data))
+                const data = await getData(userID)
+                socket.emit('oldMessages',(data))   
             } catch (error) {
                 console.error(error)
             }
         }
         oldMessages()
     });
-
-
+    
     socket.on("join_room", (data) => {
         socket.join(data);
     });
@@ -76,8 +90,14 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send_message", (data) => {
+        data.aouterID = userList.filter((object)=> object.userName == data.aouter)[0].nameID
+        console.log(data)
+
         if (data.typeMessage == "privte"){
-            socket.to(data.reciver).emit("privte_message", data)
+            const socketTo = userList.filter((object)=> object.nameID === data.to)[0].socket
+
+            socket.to(socketTo).emit("receive_message", data)
+            socket.emit("receive_message", data)
         }
         else{
             io.to(data.room).emit("receive_message", data)  
@@ -93,6 +113,15 @@ io.on("connection", (socket) => {
     socket.on('disconnect', ()=>{
         console.log(`   User Disonnected: ${socket.id}`);
         console.log(io.engine.clientsCount)
+
+        try {
+            userList.filter((object)=> object.socket == socket.id)[0].status = 'disconncet'
+            userList.filter((object)=> object.socket == socket.id)[0].socket = ''
+        } catch (error) {
+            console.error(error)
+        }
+        io.emit("userList",userList)
+        console.log(userList)
     })
 });
 

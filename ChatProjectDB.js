@@ -1,15 +1,23 @@
 console.log("ChatProjectDB")
 import mongoose from 'mongoose'
-import chatProjectSchema from "./ChatProjectSchema.js"
+import {messageSchema,usersSchema,roomsSchema} from "./ChatProjectSchema.js"
 
 
-export async function getData(user){
-    await mongoose.connect(process.env.MONGOURI)
-    mongoose.connection.on('connected',()=>{
-        console.log('mongodb Connected!')
-    })
+const chatProjectSchema = messageSchema
+const chatUsers = usersSchema
+const chatRooms = roomsSchema
+
+mongoose.set('strictQuery',true);
+
+mongoose.connect(process.env.MONGOURI)
+mongoose.connection.on('connected',()=>{
+    console.log('mongodb Connected!')
+})
+
+export async function getData(userID){
+
     try {
-        const messagesFromDB = await chatProjectSchema.find({aouter:user})
+        const messagesFromDB = await chatProjectSchema.find({$or:[{to:userID},{aouterID:userID},{typeMessage:"public"}]})
         return messagesFromDB
     } catch (error) {
         console.error('Error retrieving information', error);
@@ -17,10 +25,7 @@ export async function getData(user){
 }
 
 export async function getUsers(){
-    await mongoose.connect(process.env.MONGOURI)
-    mongoose.connection.on('connected',()=>{
-        console.log('mongodb Connected!')
-    })
+ 
     try {
         const messagesFromDB = await chatProjectSchema.find();
         return messagesFromDB
@@ -30,10 +35,7 @@ export async function getUsers(){
 }
 
 export async function getRooms(){
-    await mongoose.connect(process.env.MONGOURI)
-    mongoose.connection.on('connected',()=>{
-        console.log('mongodb Connected!')
-    })
+
     try {
         const messagesFromDB = await chatProjectSchema.find();
         return messagesFromDB
@@ -43,25 +45,22 @@ export async function getRooms(){
 }
 
 async function SaveData(data){
-    await mongoose.connect(process.env.MONGOURI)
-
-    const to = data.to;
+     const to = data.to;
     const type = data.typeMessage;
     const room = data.room;
     const aouter = data.aouter;
+    const aouterID = data.aouterID;
     const message = data.message;
     const time = data.time;
     const reply = data.reply;
 
-    mongoose.connection.on('connected',async ()=>{
-        console.log('mongodb Connected!')
-    })
     try {
         const messageData = await chatProjectSchema.create({ 
             to:to,
             typeMessage:type,
             room:room,
             aouter:aouter,
+            aouterID:aouterID,
             message:message,
             time:time,
             reply:reply,
