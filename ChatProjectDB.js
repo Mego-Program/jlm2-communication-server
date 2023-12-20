@@ -1,6 +1,9 @@
 console.log("ChatProjectDB")
 import mongoose from 'mongoose'
 import {messageSchema,usersSchema,roomsSchema} from "./ChatProjectSchema.js"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 
 const chatProjectSchema = messageSchema
