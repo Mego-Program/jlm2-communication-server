@@ -17,7 +17,7 @@ userList.map((object) => { object.socket = '', object.status = 'disconncet' })
 let userFromInfraURL = "https://infra-jerusalem-2-server.vercel.app/allusersnameimg"
 const io = new Server(server, {
     cors: {
-        origin: ["https://admin.socket.io", "http://localhost:5174", "http://localhost:5173", "http://localhost:4173", "https://communication-jlm-2-9b72.vercel.app", "https://communication-jlm-2-9b72.vercel.app/assets/remoteEntry.js"],
+        origin: ["https://admin.socket.io", "http://localhost:5174", "http://localhost:5173", "http://localhost:4173", "https://communication-jlm-2-9b72.vercel.app", "https://communication-jlm-2-9b72.vercel.app/assets/remoteEntry.js","https://infra-jerusalem-2.vercel.app"],
         credentials: true,
         methods: ["GET", "POST", "HEAD"],
     }
