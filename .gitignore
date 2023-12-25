@@ -8,3 +8,4 @@ node_modules
 
 pass.js
 .env.local
+.env

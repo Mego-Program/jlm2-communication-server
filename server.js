@@ -7,14 +7,13 @@ import SaveData, { getData, createUser, getUsers, createRooms, getRooms, lockRoo
 import { instrument } from '@socket.io/admin-ui';
 
 const app = express();
-const port = 3001;
+const port = 3001//process.env.PORT;
 const server = http.createServer(app)
 const userList = []
 const roomList = []
 
-userList.map((object) => { object.socket = '', object.status = 'disconncet' })
-
-let userFromInfraURL = "https://infra-jerusalem-2-server.vercel.app/allusersnameimg"
+let userFromInfraURL = "https://infra-jerusalem-2-server.vercel.app/allusersnameimg"//process.env.USERS
+console.log(userFromInfraURL)
 const io = new Server(server, {
     cors: {
         origin: ["https://admin.socket.io", "http://localhost:5174", "http://localhost:5173", "http://localhost:4173", "https://communication-jlm-2-9b72.vercel.app", "https://communication-jlm-2-9b72.vercel.app/assets/remoteEntry.js","https://infra-jerusalem-2.vercel.app"],
@@ -22,6 +21,7 @@ const io = new Server(server, {
         methods: ["GET", "POST", "HEAD"],
     }
 });
+
 
 async function startServer() {
     const mainRoom = {
@@ -75,8 +75,8 @@ io.on("connection", (socket) => {
             console.log("you in DB")
         }
         try {
-            userList.filter((object) => object.userName == user)[0].socket = socket.id
-            userList.filter((object) => object.userName == user)[0].status = 'connect'
+            userList.forEach((object) => { if (object.userName == user) { object.socket = socket.id } })
+            userList.forEach((object) => { if (object.userName == user) { object.status = "connect" } })
             io.emit("userList", userList)
         } catch (error) {
             console.error(error)
@@ -89,7 +89,7 @@ io.on("connection", (socket) => {
             io.emit("userList", userList)
         }
 
-        const userName = userList.filter((object) => object.userName == user)[0].userName
+        const userName = userList.forEach((object) => { if (object.userName == user) { object.userName } })
         const oldMessages = async () => {
             try {
                 const data = await getData(userName)
@@ -107,13 +107,13 @@ io.on("connection", (socket) => {
 
     socket.on("lockRoom", (roomName) => {
         lockRoom(roomName)
-        roomList.filter((object)=> object.roomName == roomName)[0].status = "lock"
+        roomList.forEach((object) => { if (object.roomName == roomName) { object.status = "lock" } })
         io.emit("roomList", roomList)
         console.log(roomList)
     })
     socket.on("unLockRoom", (roomName) => {
         unLockRoom(roomName)
-        roomList.filter((object)=> object.roomName == roomName)[0].status = "open"
+        roomList.forEach((object) => { if (object.roomName == roomName) { object.status = "open" } })
 
         io.emit("roomList", roomList)
         console.log(roomList)
@@ -159,10 +159,10 @@ io.on("connection", (socket) => {
         console.log('users:', io.engine.clientsCount)
 
         try {
-            userList.filter((object) => object.socket == socket.id)[0].status = 'disconncet'
-            userList.filter((object) => object.socket == socket.id)[0].socket = ''
+            userList.forEach((object) => { if (object.socket == socket.id) { object.status = 'disconncet' } })
+            userList.forEach((object) => { if (object.socket == socket.id) { object.socket = '' } })
         } catch (error) {
-            console.error(162, error)
+            console.error(error)
         }
         io.emit("userList", userList)
     })
