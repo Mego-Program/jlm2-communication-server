@@ -10,7 +10,8 @@ const chatUsers = usersSchema
 const chatRooms = roomsSchema
 
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.MONGOURI)
+mongoose.connect(process.env.MONGO_URI)
+
 mongoose.connection.on('connected', () => {
     console.log('mongodb Connected!')
 })
@@ -23,6 +24,7 @@ export async function getData(userName) {
         console.error('Error retrieving information', error);
     }
 }
+
 
 export async function getUsers() {
     try {
