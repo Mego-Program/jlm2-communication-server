@@ -64,8 +64,6 @@ instrument(io, {
 
 io.on("connection", (socket) => {
     console.log('users:', io.engine.clientsCount, `User Connected: ${socket.id}`);
-    io.emit("roomList", roomList)
-    io.emit("userList", userList)
     let user = ""
     socket.on('upLoadOldmessages', (localStorageForMe) => {
         user = localStorageForMe.userName;
@@ -75,24 +73,19 @@ io.on("connection", (socket) => {
             console.log("you in DB")
         }
         try {
-            userList.forEach((object) => { if (object.userName == user) { object.socket = socket.id } })
-            userList.forEach((object) => { if (object.userName == user) { object.status = "connect" } })
+            userList.forEach((object) => { if (object.userName === user) { object.socket = socket.id } })
+            userList.forEach((object) => { if (object.userName === user) { object.status = "connect" } })
             io.emit("userList", userList)
+            io.emit("roomList", roomList)
         } catch (error) {
             console.error(error)
             console.log('not found user!')
-            userList.push({
-                userName: user,
-                status: 'connect',
-                socket: socket.id
-            })
-            io.emit("userList", userList)
         }
 
-        const userName = userList.forEach((object) => { if (object.userName == user) { object.userName } })
+        const userName = userList.forEach((object) => { if (object.userName === user) { object.userName } })
         const oldMessages = async () => {
             try {
-                const data = await getData(userName)
+                const data = await getData(user)
                 socket.emit('oldMessages', (data))
             } catch (error) {
                 console.error(error)
@@ -134,8 +127,7 @@ io.on("connection", (socket) => {
 
     socket.on("send_message", (data) => {
         data.aouterID = userList.filter((object) => object.userName == data.aouter)[0].userName
-        console.log(data.aouterID)
-        if (data.typeMessage == "privte") {
+        if (data.typeMessage === "privte") {
             socket.emit("receive_message", data)
             const socketTo = userList.filter((object) => object.userName === data.to)[0].socket
             console.log(socketTo)
