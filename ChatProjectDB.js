@@ -86,8 +86,7 @@ export async function createRooms(room) {
 export async function createUser(user) {
     try {
         const usersFromDB = await chatUsers.findOne({ userName: user.userName });
-        // console.log(usersFromDB)
-        if (usersFromDB == null) {
+        if (usersFromDB === null) {
             try {
                 const dataUser = await chatUsers.create({
                     userName: user.userName,
@@ -124,7 +123,7 @@ async function SaveData(data) {
         })
         messageData.save
     } catch (error) {
-        console.log("ERROR: " + error.message)
+        console.log("ERROR: " + error.message)  
     }
 }
 export default SaveData 
