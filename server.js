@@ -22,7 +22,6 @@ const io = new Server(server, {
     }
 });
 
-
 async function startServer() {
     const mainRoom = {
         status: "open",
@@ -80,9 +79,7 @@ io.on("connection", (socket) => {
         } catch (error) {
             console.error(error)
             console.log('not found user!')
-        }
-
-        const userName = userList.forEach((object) => { if (object.userName === user) { object.userName } })
+        }   
         const oldMessages = async () => {
             try {
                 const data = await getData(user)
@@ -138,7 +135,6 @@ io.on("connection", (socket) => {
         else {
             io.to(data.room).emit("receive_message", data)
         }
-
         try {
             SaveData(data)
         } catch (error) {
